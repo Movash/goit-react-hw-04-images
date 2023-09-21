@@ -3,7 +3,6 @@ import { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
-import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
@@ -41,7 +40,7 @@ export class App extends Component {
       );
       if (!data.hits.length) {
         Notify.info(`No images`);
-        return
+        return;
       }
       const numberOfPage = Math.ceil(data.totalHits / 12);
       this.setState(prevState => ({
@@ -57,8 +56,8 @@ export class App extends Component {
 
   handleSetSearchQuery = value => {
     if (!value.trim() || value === this.state.searchQuery) {
-      Notify.info(`Change your search query`)
-      return
+      Notify.info(`Change your search query`);
+      return;
     }
     this.setState({ searchQuery: value, images: [], page: 1 });
   };
@@ -67,33 +66,23 @@ export class App extends Component {
     this.setState(state => ({ page: state.page + 1 }));
   };
 
-  toggleModal = (largeImageURL = '') => {
-    this.setState(prevState => ({
-      isShowModal: !prevState.isShowModal,
-      selectedImage: largeImageURL,
-    }));
-  };
-
   render() {
     const {
       images,
       error,
       isLoading,
       isShowButton,
-      isShowModal,
-      selectedImage,
     } = this.state;
-    const { handleSetSearchQuery, handleMoreImage, toggleModal } = this;
+    const { handleSetSearchQuery, handleMoreImage } = this;
     return (
       <div className="App">
         {error && <h1>{error}</h1>}
         <Searchbar onSubmit={handleSetSearchQuery} />
         {isLoading && <Loader />}
-        {!images.length ? null : <ImageGallery toggleModal={toggleModal} images={images} />}
-        {isShowButton && <Button handleMoreImage={handleMoreImage} />}
-        {isShowModal && (
-          <Modal selectedImage={selectedImage} toggleModal={toggleModal} />
+        {!images.length ? null : (
+          <ImageGallery images={images} />
         )}
+        {isShowButton && <Button handleMoreImage={handleMoreImage} />}
       </div>
     );
   }

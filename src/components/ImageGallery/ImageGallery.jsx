@@ -1,11 +1,10 @@
 import React from 'react';
 import ImageGalleryItem from './../ImageGalleryItem/ImageGalleryItem';
 
-const ImageGallery = ({ images, toggleModal }) => (
+const ImageGallery = ({ images }) => (
   <ul className="ImageGallery">
     {images.map(image => (
       <ImageGalleryItem
-        toggleModal={toggleModal}
         key={image.id}
         image={image}
       />

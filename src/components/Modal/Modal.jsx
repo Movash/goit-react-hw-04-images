@@ -1,33 +1,30 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 
-class Modal extends Component {
+import React from 'react';
 
-  componentDidMount() { 
-    document.addEventListener('keydown', this.handleKeyEsc)
-    document.body.style.overflowY = 'hidden'
-  }
+const Modal = ({ selectedImage, onClose }) => {
+  useEffect(() => {
+    const handleKeyEsc = evt => {
+      if (evt.code === 'Escape') {
+        onClose();
+      }
+    };
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyEsc);
-    document.body.style.removeProperty('overflow-y');
-  }
+    document.addEventListener('keydown', handleKeyEsc);
+    document.body.style.overflowY = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKeyEsc);
+      document.body.style.removeProperty('overflow-y');
+    };
+  }, [onClose]);
 
-  handleKeyEsc = evt => {
-    if (evt.code === 'Escape') {
-      this.props.toggleModal();
-    }
-  }
-  
-  render() { 
-    const { selectedImage, toggleModal } = this.props;
-    return (
-    <div className="Overlay" onClick={() => toggleModal()}>
+  return (
+    <div className="Overlay" onClick={() => onClose()}>
       <div className="Modal" onClick={evt => evt.stopPropagation()}>
         <img src={selectedImage} alt="large img" />
       </div>
     </div>
-    );
-  }
-}
+  );
+};
 
 export default Modal;
