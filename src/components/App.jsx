@@ -1,89 +1,68 @@
 import { getImagesBySearch } from './../api/Images';
-import { Component } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-export class App extends Component {
-  state = {
-    images: [],
-    error: '',
-    isLoading: false,
-    searchQuery: '',
-    page: 1,
-    isShowButton: false,
-    isShowModal: false,
-    selectedImage: '',
-  };
+import React from 'react'
 
-  componentDidUpdate(_, prevState) {
-    if (
-      prevState.searchQuery !== this.state.searchQuery ||
-      prevState.page !== this.state.page
-    ) {
-      this.fetchImages();
-    }
-  }
+const App = () => {
+  const [images, setImages] = useState([])
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [isShowButton, setIsShowButton] = useState(false)
 
-  fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     try {
-      this.setState({
-        isLoading: true,
-        error: '',
-        isShowButton: false,
-      });
-      const data = await getImagesBySearch(
-        this.state.searchQuery,
-        this.state.page
-      );
+      setIsLoading(true);
+      setError('');
+      setIsShowButton(false);
+      const data = await getImagesBySearch(searchQuery, page);
       if (!data.hits.length) {
         Notify.info(`No images`);
         return;
       }
       const numberOfPage = Math.ceil(data.totalHits / 12);
-      this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-        isShowButton: numberOfPage !== this.page,
-      }));
+      setImages(prevState => [...prevState, ...data.hits]);
+      setIsShowButton(numberOfPage !== page);
     } catch ({ message }) {
-      this.setState({ error: message });
+      setError(message);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
-  };
+  }, [page, searchQuery]);
 
-  handleSetSearchQuery = value => {
-    if (!value.trim() || value === this.state.searchQuery) {
+  useEffect(() => {
+      searchQuery && fetchImages();
+    }, [fetchImages, searchQuery]);
+
+  const handleSetSearchQuery = value => {
+    if (!value.trim() || value === searchQuery) {
       Notify.info(`Change your search query`);
       return;
     }
-    this.setState({ searchQuery: value, images: [], page: 1 });
+    setSearchQuery(value);
+    setImages([]);
+    setPage(1);
   };
 
-  handleMoreImage = () => {
-    this.setState(state => ({ page: state.page + 1 }));
+  const handleMoreImage = () => {
+    setPage(prevState => prevState + 1);
   };
 
-  render() {
-    const {
-      images,
-      error,
-      isLoading,
-      isShowButton,
-    } = this.state;
-    const { handleSetSearchQuery, handleMoreImage } = this;
-    return (
-      <div className="App">
-        {error && <h1>{error}</h1>}
-        <Searchbar onSubmit={handleSetSearchQuery} />
-        {isLoading && <Loader />}
-        {!images.length ? null : (
-          <ImageGallery images={images} />
-        )}
-        {isShowButton && <Button handleMoreImage={handleMoreImage} />}
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      {error && <h1>{error}</h1>}
+      <Searchbar onSubmit={handleSetSearchQuery} />
+      {isLoading && <Loader />}
+      {!images.length ? null : <ImageGallery images={images} />}
+      {isShowButton && <Button handleMoreImage={handleMoreImage} />}
+    </div>
+  );
 }
+
+export default App
