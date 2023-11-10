@@ -5,6 +5,7 @@ import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Preview from './Preview/Preview';
 
 import React from 'react'
 
@@ -59,7 +60,7 @@ const App = () => {
       {error && <h1>{error}</h1>}
       <Searchbar onSubmit={handleSetSearchQuery} />
       {isLoading && <Loader />}
-      {!images.length ? null : <ImageGallery images={images} />}
+      {!images.length ? <Preview /> : <ImageGallery images={images} />}
       {isShowButton && <Button handleMoreImage={handleMoreImage} />}
     </div>
   );

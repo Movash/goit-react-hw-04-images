@@ -211,3 +211,33 @@ img {
 .Button:focus {
   background-color: #303f9f;
 }
+
+.Preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Arrow-wrapper {
+  display: flex;
+  gap: 200px;
+}
+
+.Letter-wrapper {
+  margin-top: 100px;
+}
+
+.Letter-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.Arrow-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.Finder-svg {
+  width: 500px;
+}
